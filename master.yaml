@@ -1,0 +1,95 @@
+pipeline:
+  name: P1
+  identifier: P1
+  projectIdentifier: default_project
+  orgIdentifier: default
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: account.Github_OAuth_1722495357246
+        repoName: DheerajQR/hello-world-java-docker
+        build: <+input>
+stages:
+  name: Script1
+  type: Step
+  projectIdentifier: CYA
+  orgIdentifier: AODevSecOps
+  spec:
+    type: Run
+    spec:
+      connectorRef: account.JfrogCloudArtifactoryDocker
+      image: registry.access.redhat.com/ubi8/ubi-minimal:8.5
+      shell: Sh
+      command: |-
+        line='----------------------------------------------------------------'
+        space=' '
+ 
+        echo $line
+        echo "Pipeline: CI Pipeline Generator"
+        echo $line
+ 
+ 
+        RED='\033[0;31m'
+        GREEN='\033[0;32m'
+        NC='\033[0m'
+ 
+ 
+         if [ -z "$CI_Handoff_Completed" ] && [ -z "$App_CI" ] && [ -z "$technology_area" ] ; then
+             echo " ${RED} Exiting due to UserInput for Pipeline Creation are empty.${NC}"
+             exit 1    
+         fi
+         echo "Pipeline creation requested for Technology area ${GREEN}$technology_area ${NC} and Appci ${GREEN}$App_CI ${NC} with Handoff tag as ${GREEN}$CI_Handoff_Completed ${NC}"
+ 
+        git config --global http.sslVerify false
+        mkdir $repository_name
+        git clone https://$GIT_USER:$GIT_TOKEN@$repository_url $repository_name
+        cd $repository_name/$folder_name
+        echo "${GREEN}$repository_name cloned successfully.${NC}"
+ 
+ 
+        #Harness Access Token will be used by the python code.
+        export harness_accesstoken=$Harness_Token
+        export technology_area=$technology_area
+        export app_ci=$App_CI
+        export ci_handoff_completed=$CI_Handoff_Completed
+ 
+ 
+        echo "${GREEN}Executing Python script.${NC}"
+        echo $space
+        python $script_name
+        #Push Migrated YAML Output files to GitHub for future reference
+        echo "${GREEN}Successfully executed Python script.${NC}"
+ 
+        git config --global user.email '$GIT_USER'
+        git add .
+        if [ -n "$(git status --porcelain)" ]; then   
+            git add ../Migration_BOM/MigrationYAML_Outputs/*
+            git commit -m "Updated with HANDOFF BOM pipelines YAML output files."
+            git push https://$GIT_USER:$GIT_TOKEN@$repository_url
+        else
+          echo "No changes to commit for pipelines";
+        fi
+ 
+        if [ -n "$(git status --porcelain)" ]; then   
+            git add ../Migration_BOM/TriggerYAML_Outputs/*
+            git commit -m "Updated with HANDOFF BOM Trigger YAML output files."
+            git push https://$GIT_USER:$GIT_TOKEN@$repository_url
+        else
+          echo "No changes to commit for triggers";
+        fi
+ 
+        echo $line
+      envVariables:
+        repository_name: <+pipeline.variables.repository_name>
+        repository_url: <+pipeline.variables.repository_url>
+        GIT_TOKEN: <+pipeline.variables.GIT_TOKEN>
+        GIT_USER: <+pipeline.variables.GIT_USER>
+        folder_name: <+pipeline.variables.folder_name>
+        Harness_Token: <+pipeline.variables.Harness_Token>
+        technology_area: <+pipeline.variables.Technology_Area>
+        App_CI: <+pipeline.variables.App_CI>
+        CI_Handoff_Completed: <+pipeline.variables.CI_Handoff_Completed>
+        script_name: <+pipeline.variables.script_name>
+  identifier: Script1
+  versionLabel: v2.0
