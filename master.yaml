@@ -1,17 +1,5 @@
-pipeline:
-  name: P1
-  identifier: P1
-  projectIdentifier: default_project
-  orgIdentifier: default
-  tags: {}
-  properties:
-    ci:
-      codebase:
-        connectorRef: account.Github_OAuth_1722495357246
-        repoName: DheerajQR/hello-world-java-docker
-        build: <+input>
-stages:
-  name: Script1
+template:
+  name: St-CI-Execute Pipeline Script
   type: Step
   projectIdentifier: CYA
   orgIdentifier: AODevSecOps
@@ -19,7 +7,7 @@ stages:
     type: Run
     spec:
       connectorRef: account.JfrogCloudArtifactoryDocker
-      image: registry.access.redhat.com/ubi8/ubi-minimal:8.5
+      image: artifactorycloud.com/l-docker/aodevsecops/cya/baseimage/python-scm:2.0.60
       shell: Sh
       command: |-
         line='----------------------------------------------------------------'
@@ -91,5 +79,5 @@ stages:
         App_CI: <+pipeline.variables.App_CI>
         CI_Handoff_Completed: <+pipeline.variables.CI_Handoff_Completed>
         script_name: <+pipeline.variables.script_name>
-  identifier: Script1
+  identifier: St_CI_Execute_Pipeline_Script
   versionLabel: v2.0
