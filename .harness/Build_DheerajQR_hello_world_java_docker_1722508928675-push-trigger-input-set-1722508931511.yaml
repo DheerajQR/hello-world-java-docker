@@ -1,0 +1,14 @@
+inputSet:
+  name: Build_DheerajQR_hello_world_java_docker_1722508928675-push-trigger-input-set
+  identifier: Build_DheerajQR_hello_world_java_docker_1722508928675pushtriggerinputset
+  orgIdentifier: default
+  projectIdentifier: default_project
+  pipeline:
+    identifier: Build_DheerajQR_hello_world_java_docker_1722508928675
+    properties:
+      ci:
+        codebase:
+          build:
+            type: branch
+            spec:
+              branch: <+trigger.branch>
