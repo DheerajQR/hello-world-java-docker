@@ -1,0 +1,14 @@
+inputSet:
+  name: Build_DheerajQR_hello_world_java_docker_1722508928675-pr-trigger-input-set
+  identifier: Build_DheerajQR_hello_world_java_docker_1722508928675prtriggerinputset
+  orgIdentifier: default
+  projectIdentifier: default_project
+  pipeline:
+    identifier: Build_DheerajQR_hello_world_java_docker_1722508928675
+    properties:
+      ci:
+        codebase:
+          build:
+            type: PR
+            spec:
+              number: <+trigger.prNumber>
